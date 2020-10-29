@@ -15,7 +15,7 @@ public class Fragment2 extends Fragment {
 
     //1.
     private FragsData fragsData;
-    private Observer<Integer> numberObserver;
+    private Observer<String> numberObserver;
 
     //2.
     private TextView text;
@@ -33,23 +33,19 @@ public class Fragment2 extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_2, container, false);
-
         //1.
         text = (TextView) view.findViewById(R.id.current);
         button = (Button) view.findViewById(R.id.button_plus);
-
         //2.
         fragsData = new ViewModelProvider(requireActivity()).get(FragsData.class);
 
         //3.
-        numberObserver = new Observer<Integer>() {
+        numberObserver = new Observer<String>() {
             @Override
-            public void onChanged(Integer newInteger) {
-
-                text.setText(newInteger.toString());
+            public void onChanged(String string) {
+                text.setText(string);
             }
         };
-
         //4.
         fragsData.counter.observe(getViewLifecycleOwner(), numberObserver);
 
@@ -57,13 +53,16 @@ public class Fragment2 extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
                                       @Override
                                       public void onClick(View view) {
-
-                                          Integer i = fragsData.counter.getValue();
-                                          fragsData.counter.setValue(++i);
+                                          Integer i;
+                                          if(fragsData.counter.getValue().equals("")){
+                                              i=0;
+                                          } else i =Integer.parseInt(fragsData.counter.getValue());
+                                          i++;
+                                          String s=i.toString();
+                                          fragsData.counter.setValue(s);
                                       }
                                   }
         );
-
         return view;
     }
 }

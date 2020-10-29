@@ -16,12 +16,13 @@ public class Fragment4 extends Fragment {
 
     //1.
     private FragsData fragsData;
-    private Observer<Integer> numberObserver;
+    private Observer<String> numberObserver;
 
     //2.
     private EditText edit;
     private TextWatcher textWatcher;
     private boolean turnOffWatcher;
+    private boolean act;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,20 +38,25 @@ public class Fragment4 extends Fragment {
         //1.
         edit = view.findViewById(R.id.editTextNumber);
 
+
         //2.
         fragsData = new ViewModelProvider(requireActivity()).get(FragsData.class);
 
         //3.
-        numberObserver = new Observer<Integer>() {
+        numberObserver = new Observer<String>() {
             @Override
-            public void onChanged(Integer newInteger) {
-                turnOffWatcher = true;
-                edit.setText(newInteger.toString());
+            public void onChanged(String newString) {
+               if(!act){
+                   turnOffWatcher = true;
+                   edit.setText(newString);
+               }
+
             }
         };
 
         //4.
         fragsData.counter.observe(getViewLifecycleOwner(), numberObserver);
+
 
         //5.
         textWatcher = new TextWatcher() {
@@ -60,25 +66,30 @@ public class Fragment4 extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+              if(s.toString().length()==0){
+                  turnOffWatcher=true;
+              }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
                 if(!turnOffWatcher){
-
+                    act=true;
                     Integer i;
+                    String str;
                     try{
-                        i = Integer.parseInt( s.toString() );
+                        i = Integer.parseInt(s.toString());
+                        str=s.toString();
                     } catch (NumberFormatException e){
-                        i = fragsData.counter.getValue();
+                        str="";
                     }
-                    fragsData.counter.setValue(i);
-
+                    fragsData.counter.setValue(str);
+                   act=false;
                 } else {
                     turnOffWatcher = !turnOffWatcher;
                 }
             }
+
         };
 
         //6.
